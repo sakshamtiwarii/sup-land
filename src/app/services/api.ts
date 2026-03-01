@@ -1,5 +1,9 @@
 // API configuration for backend communication
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// In production on Vercel, API is on same domain at /api
+// In development, use the env variable or default to localhost
+const API_BASE_URL = import.meta.env.PROD 
+  ? '/api' 
+  : (import.meta.env.VITE_API_URL || 'http://localhost:5000/api');
 
 interface ApiResponse<T = unknown> {
   success: boolean;
