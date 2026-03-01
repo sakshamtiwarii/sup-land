@@ -1,8 +1,8 @@
 // API configuration for backend communication
-// In production on Vercel, API is on same domain at /api
-// In development, use the env variable or default to localhost
-const API_BASE_URL = import.meta.env.PROD 
-  ? '/api' 
+// In production on Vercel, API is always on the same domain at /api
+// In development, use the env variable or default to localhost:5000
+const API_BASE_URL = import.meta.env.PROD
+  ? '/api'
   : (import.meta.env.VITE_API_URL || 'http://localhost:5000/api');
 
 interface ApiResponse<T = unknown> {
@@ -18,7 +18,7 @@ async function fetchApi<T>(
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
   const url = `${API_BASE_URL}${endpoint}`;
-  
+
   const config: RequestInit = {
     headers: {
       'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ async function fetchApi<T>(
   try {
     const response = await fetch(url, config);
     const data = await response.json();
-    
+
     if (!response.ok) {
       // Log full error details for debugging (only in development)
       if (import.meta.env.DEV) {
@@ -42,9 +42,9 @@ async function fetchApi<T>(
           requestBody: options.body
         });
       }
-      throw new Error(data.message || data.errors?.map((e: {msg: string}) => e.msg).join(', ') || 'Something went wrong');
+      throw new Error(data.message || data.errors?.map((e: { msg: string }) => e.msg).join(', ') || 'Something went wrong');
     }
-    
+
     return data;
   } catch (error) {
     if (error instanceof Error) {

@@ -46,4 +46,12 @@ export default defineConfig({
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom', 'motion/react'],
   },
+  server: {
+    port: process.env.PORT ? parseInt(process.env.PORT) : 5173,
+    strictPort: true,
+  },
+  preview: {
+    port: process.env.PORT ? parseInt(process.env.PORT) : 4173,
+    strictPort: true,
+  },
 })
