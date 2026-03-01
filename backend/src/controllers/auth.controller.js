@@ -143,7 +143,7 @@ export const googleAuth = async (req, res) => {
     });
 
     const payload = ticket.getPayload();
-    
+
     if (!payload) {
       return res.status(400).json({
         success: false,
@@ -188,7 +188,7 @@ export const googleAuth = async (req, res) => {
     const emailPrefix = email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
     let username = emailPrefix;
     let counter = 1;
-    
+
     // Ensure unique username
     while (await User.findOne({ username })) {
       username = `${emailPrefix}${counter}`;
@@ -221,7 +221,7 @@ export const googleAuth = async (req, res) => {
     });
 
   } catch (error) {
-    // Don't log sensitive error details
+    console.error('[googleAuth] Error:', error.message);
     res.status(500).json({
       success: false,
       message: 'Google authentication failed. Please try again.'
@@ -236,7 +236,7 @@ export const checkEmail = async (req, res) => {
   try {
     const { email } = req.params;
     const user = await User.findOne({ email: email.toLowerCase() });
-    
+
     res.json({
       success: true,
       exists: !!user
@@ -255,10 +255,10 @@ export const checkEmail = async (req, res) => {
 export const checkUsername = async (req, res) => {
   try {
     const { username } = req.params;
-    const user = await User.findOne({ 
-      username: username.toLowerCase().replace(/@/g, '') 
+    const user = await User.findOne({
+      username: username.toLowerCase().replace(/@/g, '')
     });
-    
+
     res.json({
       success: true,
       exists: !!user
@@ -301,7 +301,7 @@ export const getStats = async (req, res) => {
     const totalSignups = await User.countDocuments();
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     const todaySignups = await User.countDocuments({
       createdAt: { $gte: today }
     });
@@ -309,7 +309,7 @@ export const getStats = async (req, res) => {
     const thisMonth = new Date();
     thisMonth.setDate(1);
     thisMonth.setHours(0, 0, 0, 0);
-    
+
     const monthlySignups = await User.countDocuments({
       createdAt: { $gte: thisMonth }
     });
