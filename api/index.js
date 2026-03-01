@@ -31,11 +31,21 @@ connectDB().catch(err => {
   console.error('❌ MongoDB connection failed:', err.message);
 });
 
-
 const app = express();
 
 // Trust proxy for accurate IP detection behind reverse proxies (required for rate limiting)
 app.set('trust proxy', 1);
+
+// Ensure DB is connected before every request (required since bufferCommands=false)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('DB connection error:', err.message);
+    res.status(503).json({ success: false, message: 'Database unavailable. Please try again.' });
+  }
+});
 
 // Security middleware
 app.use(helmet({
