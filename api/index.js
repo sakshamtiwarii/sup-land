@@ -26,8 +26,10 @@ import authRoutes from '../backend/src/routes/auth.routes.js';
 import suggestionRoutes from '../backend/src/routes/suggestion.routes.js';
 import volunteerRoutes from '../backend/src/routes/volunteer.routes.js';
 
-// Connect to MongoDB
-connectDB();
+// Connect to MongoDB — errors logged to Vercel Function Logs
+connectDB().catch(err => {
+  console.error('❌ MongoDB connection failed:', err.message);
+});
 
 
 const app = express();
