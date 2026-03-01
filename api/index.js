@@ -12,6 +12,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 dotenv.config({ path: join(__dirname, '../backend/.env') });
 
+// Startup validation — logs are visible in Vercel Function Logs
+if (!process.env.MONGODB_URI) {
+  console.error('❌ FATAL: MONGODB_URI environment variable is not set. Set it in the Vercel dashboard.');
+}
+if (!process.env.GOOGLE_CLIENT_ID) {
+  console.warn('⚠️  GOOGLE_CLIENT_ID not set — Google OAuth will fail.');
+}
+
 // Import backend modules
 import connectDB from '../backend/config/db.js';
 import authRoutes from '../backend/src/routes/auth.routes.js';
@@ -20,6 +28,7 @@ import volunteerRoutes from '../backend/src/routes/volunteer.routes.js';
 
 // Connect to MongoDB
 connectDB();
+
 
 const app = express();
 
