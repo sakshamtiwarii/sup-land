@@ -123,8 +123,26 @@ app.get('/api/health', (req, res) => {
     status: 'OK',
     message: 'Sup! backend is running',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    mongoUri: process.env.MONGODB_URI ? 'SET' : 'MISSING'
   });
+});
+
+// Temporary debug endpoint — remove after diagnosing
+app.get('/api/debug/db', async (req, res) => {
+  try {
+    const mongoose = (await import('mongoose')).default;
+    const state = mongoose.connection.readyState;
+    const User = mongoose.models.User;
+    let count = null;
+    let err = null;
+    if (User) {
+      try { count = await User.countDocuments(); } catch (e) { err = e.message; }
+    }
+    res.json({ mongoState: state, userModelLoaded: !!User, userCount: count, queryError: err });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 // 404 handler
@@ -137,10 +155,8 @@ app.use((req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  // Log only in development
-  if (process.env.NODE_ENV !== 'production') {
-    console.error('Error:', err.message);
-  }
+  // Always log so Vercel Function Logs capture real errors
+  console.error('[ERROR]', err.message, err.stack);
 
   // Handle CORS errors
   if (err.message === 'Not allowed by CORS') {
