@@ -9,6 +9,7 @@ import {
   getAllSignups,
   getStats
 } from '../controllers/auth.controller.js';
+import adminAuth from '../middleware/adminAuth.js';
 
 const router = express.Router();
 
@@ -53,7 +54,7 @@ router.post('/login', loginValidation, login);
 router.post('/google', googleAuth);
 router.get('/check-email/:email', checkEmail);
 router.get('/check-username/:username', checkUsername);
-router.get('/signups', getAllSignups);
-router.get('/stats', getStats);
+router.get('/signups', adminAuth, getAllSignups);
+router.get('/stats', adminAuth, getStats);
 
 export default router;
